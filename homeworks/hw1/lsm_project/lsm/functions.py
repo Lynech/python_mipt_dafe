@@ -44,7 +44,7 @@ def get_lsm_lines(
 
     if lsm_description is None:
         lsm_description = get_lsm_description(abscissa, ordinates)
-    elif type(lsm_description) is LSMDescription:
+    elif type(lsm_description) is not LSMDescription:
         raise TypeError
     a = lsm_description.incline
     b = lsm_description.shift
@@ -76,10 +76,10 @@ def get_report(
     global PRECISION
 
     report = "LSM computing result".center(100, '=')\
-        + f'\n[INFO]: incline: {a:.{PRECISION}f};'\
+        + f'\n\n[INFO]: incline: {a:.{PRECISION}f};'\
         f'\n[INFO]: shift: {b:.{PRECISION}f};'\
         f'\n[INFO]: incline error: {d_a:.{PRECISION}f};'\
-        f'\n[INFO]: shift error: {d_b:.{PRECISION}f};\n'\
+        f'\n[INFO]: shift error: {d_b:.{PRECISION}f};\n\n'\
         + 100*'='
     if path_to_save:
         if not os.path.exists(os.path.dirname(os.path.abspath(path_to_save))):
@@ -119,12 +119,12 @@ def _process_mismatch(
     global event_logger
 
     event_logger.info("_process_mismatch started...")
-    if MismatchStrategies == MismatchStrategies.FALL:
+    if mismatch_strategy == MismatchStrategies.FALL:
         raise RuntimeError
-    if MismatchStrategies == MismatchStrategies.CUT:
+    if mismatch_strategy == MismatchStrategies.CUT:
         min_ = min(len(ordinates), len(abscissa))
     else:
-        raise ValueError
+        raise ValueError()
     event_logger.info("_process_mismatch done!")
     return (abscissa[:min_], ordinates[:min_])
 
