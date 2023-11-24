@@ -22,65 +22,98 @@ from typing import Generator, Any
 
 
 class Vector3D:
-    _x: float
-    _y: float
-    _z: float
-    
-    def __init__(
-        self,
-        x: float = 0,
-        y: float = 0,
-        z: float =0
-    ) -> None:
-        pass
-        
-    def __iter__(self) -> Generator[float, None, None]:
-        pass
-    
+    __x: float
+    __y: float
+    __z: float
+
+    def __init__(self, x: float = 0, y: float = 0, z: float = 0) -> None:
+        self.__x = float(x)
+        self.__y = float(y)
+        self.__z = float(z)
+
+    def __iter__(self) -> Generator[float, float, float]:
+        cords = (self.__x, self.__y, self.__z)
+        return (cord for cord in cords)
+
     def __repr__(self) -> str:
-        pass
-    
+        return f"Vector3D({self.__x}, {self.__y}, {self.__z})"
+
     def __abs__(self) -> float:
-        pass
-    
+        return (self.__x**2 + self.__y**2 + self.__z**2) ** 0.5
+
     def __bool__(self) -> bool:
-        pass
-    
-    def __eq__(self, other: Any) -> bool:    
-        pass
-    
+        return not abs(self)
+
+    def __eq__(self, other: Any) -> bool:
+        # if not isinstance(other, Vector3D):
+        #     raise TypeError
+        return tuple(self) == tuple(other)
+
     def __neg__(self):
-        pass
-    
+        return -1 * self
+
     def __add__(self, other):
-        pass
-    
+        return Vector3D(self.__x + other.x, self.__y + other.y, self.__z + other.z)
+
     def __sub__(self, other):
-        pass
-    
+        return self + (-other)
+
     def __mul__(self, scalar: float):
-        pass
-    
+        return Vector3D(scalar * self.__x, scalar * self.__y, scalar * self.__z)
+
     def __rmul__(self, scalar: float):
-        pass
-    
+        return self * scalar
+
     def __truediv__(self, scalar):
-        pass
-    
+        return self * (1 / scalar)
+
     def dot(self, other) -> float:
-        pass
-    
+        return self.__x * other.x + self.__y * other.y + self.__z * other.z
+
     def cross(self, other):
-        pass
-        
+        return Vector3D(
+            self.__y * other.z - self.__z * other.y,
+            -self.__x * other.z + self.__z * other.x,
+            self.__x * other.y - self.__y * other.x,
+        )
+
     @property
     def x(self) -> float:
-        pass
-    
+        return self.__x
+
     @property
     def y(self) -> float:
-        pass
-    
+        return self.__y
+
     @property
     def z(self) -> float:
-        pass
+        return self.__z
+
+    def dot_to_dot(self, other):
+        return abs(self - other)
+
+    def cos(self, other):
+        return self.dot(other) / abs(self) / abs(self)
+
+    def dis_to_otr(self, r0, r1):
+        a = r1 - r0
+        if a.dot(self - r0) < 0:
+            return self.dot_to_dot(r0)
+        elif a.dot(self - r1) > 0:
+            return self.dot_to_dot(r1)
+        else:
+            return self.dis_to_line(r0, r1)
+
+    def dis_to_line(self, r0, r1):
+        a = r1 - r0
+        return abs(r0.cross(a) - self.cross(a)) / abs(a)
+
+
+a = Vector3D(1, 5, 0)
+b = Vector3D(1, 1, 0)
+c = Vector3D(1, 0, 1)
+
+print(c.dis_to_otr(b, a))  # расстояние от точки до отрезка, задаваемого двумя векторами
+print(c.dis_to_line(b, a))  # расстояние от точки до прямой, заданной двумя векторами
+print(c.dot_to_dot(b))  # расстояние от точки до точки
+print(c.cos(b - a))  # косинус угла между векторами
